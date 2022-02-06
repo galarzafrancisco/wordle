@@ -2,19 +2,13 @@ import copy
 import random
 import pandas as pd
 
-common_words_file_name = 'clean-3000-most-common.txt'
 all_words_file_name = 'clean-words-raw.txt'
-# test_set_file_name = 'test-set.txt'
-test_set_file_name = '1000.txt'
 
 
 # load words
-with open(f'data/{common_words_file_name}') as f:
-    common_words = f.read().split('\n')
 with open(f'data/{all_words_file_name}') as f:
     all_words = f.read().split('\n')
-with open(f'data/{test_set_file_name}') as f:
-    test_set = f.read().split('\n')
+
 
 class Feedback:
     def __init__(self):
@@ -92,8 +86,6 @@ def rank_options(list_of_words, feedback):
             internal_feedback = feedback.copy()
             internal_feedback = evaluate_guess(guess, right_answer, internal_feedback)
             possible_answers = get_possible_answers(list_of_words, internal_feedback)
-            # if len(possible_answers) > 500:
-            #     possible_answers = get_possible_answers(common_words, internal_feedback)
             matrix[idx_right_answer][idx_guess] = len(possible_answers)
             next_list_length.append(len(possible_answers))
         guess_score = sum(next_list_length) / len(next_list_length)
@@ -122,7 +114,7 @@ def print_options(options):
     score_scale = bar_length / score_range
     for [word, score] in options_to_print:
         bar = ''.join(['-' if (score - min_score) * score_scale >= idx else ' ' for idx in range(bar_length)])
-        print(f'{word} {bar} {score}')
+        print(f'   {word} {bar} {score}')
     
 
 
@@ -161,10 +153,13 @@ def play(right_answer):
 
 
 def help():
+    # Instantiate a feedback instance
     feedback = Feedback()
     win = False
     turn = 1
-    guess = 'arise'
+    # An off-line all-vs-all analysis returned 'arise' as the best(*) first word, so let's start with that
+    # (*): best in the sence that it has the highest probability of reducing the subset of possible answers.
+    options = [['arise', 1]]
     while not win:
         print('')
         print('')
@@ -172,15 +167,21 @@ def help():
         print(f'Round {turn}')
         print('')
         
+
         # Recommend option and ask for feedback from the user
+        guess = options[0][0]
         print(f'Try "{guess}"')
+        if len(options) > 1:
+            print(' > here are other options that may also work (low score is better)')
+            print_options(options)
+
         guess = input("what word did you enter? ")
         colours = ''
         while len(colours) != 5:
-            colours = input("what was the feedback? [g/b/y] ")
+            colours = input("what was the feedback? Enter 'g' for green, 'b' for black and 'y' for yellow. ")
         if colours == 'ggggg':
             win = True
-            print("Congratulations!")
+            print("Congratulations you legend!")
         else:
             for idx, colour in enumerate(colours):
                 if colour == 'g':
@@ -196,8 +197,6 @@ def help():
             # Evaluate feedback and get new answers
             possible_answers = get_possible_answers(all_words, feedback)
             options = rank_options(possible_answers, feedback)
-            print_options(options)
-            guess = options[0][0]
             turn += 1
 
         

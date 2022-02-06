@@ -1,6 +1,0 @@
-termcolor
-pandas
-jupyter
-PyDictionary
-selenium
-webdriver-manager

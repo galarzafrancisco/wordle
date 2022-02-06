@@ -1,3 +1,6 @@
 #!/bin/bash
 
-curl https://raw.githubusercontent.com/dwyl/english-words/master/words.txt -o data/words.txt
+python3 -m venv env
+source env/bin/activate
+pip install -r requirements.txt
+deactivate

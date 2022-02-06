@@ -2,7 +2,6 @@ import enchant
 us_dictionary = enchant.Dict('en_US')
 gb_dictionary = enchant.Dict('en_GB')
 
-# file_name = '3000-most-common' # https://www.ef-australia.com.au/english-resources/english-vocabulary/top-3000-words/
 file_name = 'words-raw'
 
 with open(f'data/{file_name}.txt', 'r') as f:
